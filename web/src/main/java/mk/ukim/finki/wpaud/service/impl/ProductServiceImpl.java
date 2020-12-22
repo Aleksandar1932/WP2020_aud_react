@@ -3,6 +3,7 @@ package mk.ukim.finki.wpaud.service.impl;
 import mk.ukim.finki.wpaud.model.Category;
 import mk.ukim.finki.wpaud.model.Manufacturer;
 import mk.ukim.finki.wpaud.model.Product;
+import mk.ukim.finki.wpaud.model.dto.ProductDto;
 import mk.ukim.finki.wpaud.model.exceptions.CategoryNotFoundException;
 import mk.ukim.finki.wpaud.model.exceptions.ManufacturerNotFoundException;
 import mk.ukim.finki.wpaud.model.exceptions.ProductNotFoundException;
@@ -82,4 +83,37 @@ public class ProductServiceImpl implements ProductService {
     public void deleteById(Long id) {
         productRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<Product> save(ProductDto productDto) {
+        Category category = this.categoryRepository.findById(productDto.getCategory())
+                .orElseThrow(() -> new CategoryNotFoundException(productDto.getCategory()));
+        Manufacturer manufacturer = this.manufacturerRepository.findById(productDto.getManufacturer())
+                .orElseThrow(() -> new ManufacturerNotFoundException(productDto.getManufacturer()));
+
+        this.productRepository.deleteByName(productDto.getName());
+        return Optional.of(this.productRepository.save(new Product(productDto.getName(), productDto.getPrice(), productDto.getQuantity(), category, manufacturer)));
+    }
+
+
+    @Override
+    public Optional<Product> edit(Long id, ProductDto productDto) {
+        Product product = this.productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
+
+        product.setName(productDto.getName());
+        product.setPrice(productDto.getPrice());
+        product.setQuantity(productDto.getQuantity());
+
+        Category category = this.categoryRepository.findById(productDto.getCategory())
+                .orElseThrow(() -> new CategoryNotFoundException(productDto.getCategory()));
+        product.setCategory(category);
+
+        Manufacturer manufacturer = this.manufacturerRepository.findById(productDto.getManufacturer())
+                .orElseThrow(() -> new ManufacturerNotFoundException(productDto.getManufacturer()));
+        product.setManufacturer(manufacturer);
+
+        return Optional.of(this.productRepository.save(product));
+    }
+
+
 }
