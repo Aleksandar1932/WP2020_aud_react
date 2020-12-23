@@ -1,5 +1,6 @@
 import React from 'react';
 import ProductTerm from '../ProductTerm/productTerm'
+import {Link} from 'react-router-dom';
 
 const products = (props) => {
     return (
@@ -13,12 +14,13 @@ const products = (props) => {
                         <th scope={"col"}>Quantity</th>
                         <th scope={"col"}>Category</th>
                         <th scope={"col"}>Manufacturer</th>
+                        <th scope={"col"}>Actions</th>
                         </thead>
 
                         <tbody>
                         {props.products.map((term) => {
                             return (
-                                <ProductTerm term={term}/>
+                                <ProductTerm term={term} onDelete={props.onDelete} onEdit={props.onEdit}/>
                             );
                         })}
 
@@ -27,6 +29,14 @@ const products = (props) => {
 
                     </table>
                 </div>
+                <div className="col mb-3">
+                    <div className="row">
+                        <div className="col-sm-12 col-md-12">
+                            <Link className={"btn btn-block btn-dark"} to={"/products/add"}>Add new product</Link>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
